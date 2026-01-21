@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>イラストお題テーマメーカー</title>
+    <style>
+        :root { --primary: #6366f1; --accent: #f43f5e; --bg: #f8fafc; }
+        body { font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; color: #1e293b; }
+        
+        /* メインコンテンツ */
+        .container { background: white; padding: 1.5rem; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); max-width: 550px; width: 100%; text-align: center; }
+        
+        /* 日本語タイトル */
+        h1 { font-size: 1.5rem; color: #334155; margin-bottom: 20px; font-weight: 800; border-bottom: 3px solid var(--primary); display: inline-block; padding-bottom: 5px; }
+        
+        #odai-display {
+            font-size: 1.2rem; font-weight: bold; margin: 15px 0; min-height: 7rem;
+            display: flex; align-items: center; justify-content: center; line-height: 1.6;
+            background: #f1f5f9; border-radius: 16px; padding: 15px; border: 2px dashed #cbd5e1;
+            white-space: pre-wrap; color: #1e293b;
+        }
+        .btns { display: grid; gap: 8px; margin-bottom: 15px; }
+        button { border: none; padding: 15px; font-size: 1rem; border-radius: 12px; cursor: pointer; transition: 0.2s; font-weight: bold; }
+        .btn-gen { background: var(--primary); color: white; }
+        .btn-gen:hover { background: #4f46e5; transform: scale(1.02); }
+        .btn-tw { background: #000; color: white; font-size: 0.9rem; }
+        
+        /* 履歴表示 */
+        .history-section { width: 100%; margin-top: 20px; text-align: left; }
+        .history-title { font-size: 0.9rem; font-weight: bold; color: #64748b; margin-bottom: 8px; border-left: 4px solid var(--primary); padding-left: 8px; }
+        #history-list { list-style: none; padding: 0; font-size: 0.8rem; color: #475569; }
+        #history-list li { background: #fff; padding: 8px; border-bottom: 1px solid #f1f5f9; line-height: 1.4; }
+        #history-list li:first-child { background: #fdf2f2; font-weight: bold; }
+        /* 広告・ポリシー */
+        .ad-space { margin: 25px 0; border-top: 1px solid #eee; padding-top: 20px; }
+        .privacy { font-size: 0.7rem; color: #94a3b8; text-align: left; margin-top: 30px; line-height: 1.6; max-width: 550px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>イラストお題テーマメーカー</h1>
+    
+    <div id="odai-display">「お題を生成」ボタンを押すと\nランダムなテーマが表示されます</div>
+    <div class="btns">
+        <button class="btn-gen" onclick="generate()">お題を生成する</button>
+        <button class="btn-tw" onclick="share()">𝕏 でお題をシェア</button>
+        <label style="font-size:0.8rem; color:#64748b; cursor:pointer;">
+            <input type="checkbox" id="auto"> 10秒ごとに自動更新
+        </label>
+    </div>
+    <div class="history-section">
+        <div class="history-title">最近の履歴 (10件)</div>
+        <ul id="history-list">
+            <li style="color:#cbd5e1;">まだ履歴はありません</li>
+        </ul>
+    </div>
+    
+    <div class="ad-space">
+        <a href="https://px.a8.net/svt/ejp?a8mat=4AVB47+GC8AGI+5TL0+5YZ75" rel="nofollow">
+        <img border="0" width="300" height="250" alt="" src="https://www21.a8.net/svt/bgt?aid=260121607988&wid=001&eno=01&mid=s00000027162001003000&mc=1"></a>
+        <img border="0" width="1" height="1" src="https://www13.a8.net/0.gif?a8mat=4AVB47+GC8AGI+5TL0+5YZ75" alt="">
+    </div>
+</div>
+
+<div class="privacy">
+    <hr>
+    <strong>プライバシーポリシー</strong><br>
+    当サイト「イラストお題テーマメーカー」では、A8.netの広告システムを利用しています。広告配信事業者は、ユーザーの興味に応じた広告を表示するためにCookieを使用することがあります。また、本ツールの利用によって生じた一切の損害について、制作者は責任を負いかねます。
+</div>
+
+<script>
+const D = {
+    adj: ["透明感のある", "機械仕掛けの", "錆びついた", "極彩色の", "重力を忘れた", "退廃的な", "神々しい", "毒々しい", "夢心地の", "忘れられた", "星を纏った", "サイバーな", "和風モダンな", "蒸気機関の", "幻想的な", "静寂に包まれた", "光り輝く", "ネオン輝く", "セピア色の", "深海色の", "魔法をかけられた", "不気味な", "煌びやかな", "古びた", "近未来の"],
+    
+    targets: [
+        "白狐", "クラゲ", "麒麟", "ハシビロコウ", "シマエナガ", "レッサーパンダ", "三毛猫", "巨大な蝶", "金魚", "一角獣", "飛竜", "人魚", "梟", "柴犬", "メンダコ", "オオカミ", "黒豹", "ペンギン", "トナカイ",
+        "彼岸花", "青い薔薇", "向日葵", "月下美人", "ミモザ", "紫陽花", "鈴蘭", "蓮の花", "多肉植物", "林檎", "苺タルト", "レモン", "白百合", "金木犀", "ポピー", "柘榴", "葡萄", "さくらんぼ",
+        "司書", "暗殺者", "神主", "騎士", "サイボーグ", "踊り子", "修道女", "吸血鬼", "探偵", "道化師", "発明家", "吟遊詩人", "魔法使い", "王女", "潜水士", "花屋", "宇宙飛行士", "海賊", "羊飼い",
+        "懐中時計", "羽根ペン", "試験管", "アンティークの鍵", "蓄音機", "手毬", "望遠鏡", "ラジオ", "街灯", "シャンデリア", "鳥かご", "チェスの駒", "トランプカード", "香水瓶", "スノードーム"
+    ],
+    scenes: [
+        "が、夜の駅のホームに佇んでいる", "が、空中庭園で茶会をしている", "が、深海で青白く光っている", "が、廃墟でピアノを弾いている", "が、鏡の中からこちらを見ている", "が、花びらと共に舞っている", "が、雨の路地裏で傘を差している", "が、雲の上で昼寝をしている", "が、図書室の梯子に登っている", "が、水槽の中に閉じ込められている", "が、ネオン街を疾走している", "が、金魚鉢をじっと覗き込んでいる", "が、秘密の契約を結んでいる", "が、手紙を静かに燃やしている", "が、徐々に結晶化している", "が、朝焼けの海辺に立っている", "が、古い屋根裏部屋で見つかる", "が、雪の降る窓辺で待っている", "が、星空を瓶に詰めている"
+    ],
+    styles: [
+        "水彩風の優しい塗り", "グリッチノイズが入ったサイバー加工", "ドラマチックな逆光厚塗り", "パステルカラーのゆめかわいい系", "映画のワンシーン風の構図", "彩度の高いポップアート調", "モノクロに赤色１色の差し色", "ドット絵風のレトロスタイル", "絵本のような温かいタッチ", "90年代アニメ風のセル画調", "インクをたっぷり使った線画", "不透明水彩の重厚な質感"
+    ]
+};
+
+let current = "";
+let historyData = [];
+
+function generate() {
+    const r = (a) => a[Math.floor(Math.random() * a.length)];
+    current = `${r(D.adj)}${r(D.targets)}\n${r(D.scenes)}\n\n【仕上げ：${r(D.styles)}】`;
+    document.getElementById('odai-display').innerText = current;
+    
+    const historyText = current.replace(/\n\n/g, ' ').replace(/\n/g, ' ');
+    historyData.unshift(historyText);
+    if (historyData.length > 10) historyData.pop();
+    
+    const list = document.getElementById('history-list');
+    list.innerHTML = historyData.map(h => `<li>${h}</li>`).join('');
+}
+
+function share() {
+    if(!current || current.includes("ボタン")) return;
+    const txt = encodeURIComponent(`イラストお題テーマメーカーで生成しました！\n今日のお題：\n${current.replace(/\n/g, ' ')}\n`);
+    const url = encodeURIComponent(window.location.href);
+    window.open(`https://twitter.com/intent/tweet?text=${txt}&url=${url}&hashtags=イラストお題テーマメーカー,イラスト練習`, '_blank');
+}
+
+setInterval(() => {
+    if(document.getElementById('auto').checked) generate();
+}, 10000);
+</script>
+
+</body>
+</html>
